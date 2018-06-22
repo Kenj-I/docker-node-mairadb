@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+
+    database:
+        image: mariadb:latest
+        env_file: ./build/envfile
+        container_name:
+        command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+        ports:
+            - "$HOST_DB_PORT:3306"
+        volumes:
+            - ./data:/var/lib/mysql
+            #if you insert init data
+            #- ../app/initial.sql:/docker-entrypoint-initdb.d/initial.sql
+        logging:
+            options:
+                max-size: "5m"
+                max-file: "10"
+        networks:
+            - app
+
+    app:
+        build: build/node
+        image: node:8-ubuntu
+        container_name: hoge
+        # if use vps
+        # user: '1000:1000'
+        depends_on:
+            - database
+        env_file: ./build/envfile
+        environment:
+            # use nginx-proxy
+            - VIRTUAL_HOST=$VIRTUAL_HOST
+            # if you use https
+            - CERT_NAME=default
+            # - HTTPS_METHOD=noredirect
+        volumes:
+            - ./project:/var/www
+        working_dir: /var/www
+        logging:
+            options:
+                max-size: "5m"
+                max-file: "10"
+        networks:
+           - external_nginx_proxy
+           - app
+
+#settin virtualhost
+networks:
+  app:
+  #use nginx proxy
+  external_nginx_proxy:
+    external: true
