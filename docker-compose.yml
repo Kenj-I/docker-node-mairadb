@@ -24,6 +24,8 @@ services:
         build: build/node
         image: node:8-ubuntu
         container_name: hoge
+        expose:
+            - '80'
         # if use vps
         # user: '1000:1000'
         depends_on:
@@ -38,6 +40,7 @@ services:
         volumes:
             - ./project:/var/www
         working_dir: /var/www
+        tty: true
         logging:
             options:
                 max-size: "5m"
