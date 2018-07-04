@@ -4,12 +4,12 @@ FROM ubuntu:16.04
 #RUN groupadd kenji
 #RUN useradd -u 1000 -g kenji kenji
 
-WORKDIR /var/www
-RUN apt-get update && apt-get install -my wget gnupg curl
+RUN apt-get update && apt-get install -my zip unzip wget gnupg curl
 
 # タイムゾーンの変更
 ENV TZ Asia/Tokyo
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get -y install tzdata && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 言語設定
 RUN apt-get install -y locales
@@ -36,3 +36,6 @@ RUN npm install -g vue-cli
 #RUN echo export PATH=~/.npm-global/bin:$PATH >> ~/.profile
 #RUN ls -l ~/.profile
 #RUN . ~/.profile # for debian, if use ubuntu or centos use comand [source ~/.profile]
+
+# workdir
+WORKDIR /var/www
